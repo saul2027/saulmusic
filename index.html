@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Adivina la Canción</title>
+<style>
+:root{--r:18px}
+body[data-theme=dark]{--bg:#0b0b12;--card:#161624;--card2:#1f1f31;--tx:#f2f2f8;--mut:#9a9ab2;--a:#a855f7;--b:#22d3ee;--ok:#22c55e;--bad:#ef4444;--bd:#2a2a40}
+body[data-theme=light]{--bg:#f5f5fa;--card:#ffffff;--card2:#eeeef6;--tx:#14141f;--mut:#6b6b82;--a:#7c3aed;--b:#0891b2;--ok:#16a34a;--bad:#dc2626;--bd:#dcdce9}
+body[data-theme=neon]{--bg:#05000f;--card:#12062a;--card2:#1b0b3d;--tx:#f5eaff;--mut:#a58bd0;--a:#ff2bd6;--b:#00f5a0;--ok:#00f5a0;--bad:#ff4d6d;--bd:#34165e}
+body[data-theme=sunset]{--bg:#1a0b10;--card:#2a121a;--card2:#391a24;--tx:#fff1e8;--mut:#d1a392;--a:#ff7a3d;--b:#ffc83d;--ok:#4ade80;--bad:#ff4d4d;--bd:#4d2430}
+body[data-theme=ocean]{--bg:#06121f;--card:#0d1f33;--card2:#12294a;--tx:#e8f4ff;--mut:#8fb0cf;--a:#38bdf8;--b:#818cf8;--ok:#34d399;--bad:#f87171;--bd:#1b3a5e}
+body[data-theme=forest]{--bg:#07140d;--card:#0e2217;--card2:#143222;--tx:#eafff2;--mut:#8fc4a4;--a:#4ade80;--b:#facc15;--ok:#4ade80;--bad:#f87171;--bd:#1c4a31}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;transition:background .3s,color .3s}
+body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.wrap{max-width:480px;margin:0 auto;padding:14px 16px 40px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.brand{font-size:18px;letter-spacing:.2px}
+.brand b{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+#themes{display:flex;gap:7px}
+#themes i{width:20px;height:20px;border-radius:50%;border:2px solid var(--bd);cursor:pointer}
+#themes i.on{outline:2px solid var(--tx);outline-offset:2px}
+.screen{display:none}.screen.on{display:block;animation:fi .3s}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:14px}
+label{display:block;font-size:12px;color:var(--mut);margin:0 0 6px;text-transform:uppercase;letter-spacing:.8px}
+input,select,textarea{width:100%;background:var(--card2);color:var(--tx);border:1px solid var(--bd);border-radius:12px;padding:13px;font-size:16px;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--a)}
+textarea{min-height:110px;resize:vertical}
+.btn{width:100%;border:1px solid var(--bd);background:var(--card2);color:var(--tx);border-radius:14px;padding:14px;font-size:16px;font-weight:600;margin-top:10px;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn.pri{background:linear-gradient(90deg,var(--a),var(--b));border:0;color:#fff}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:10px}.row>*{flex:1}.row .btn{margin-top:0}
+.or{text-align:center;color:var(--mut);font-size:13px;margin:14px 0 10px}
+.hint{color:var(--mut);font-size:12.5px;line-height:1.5;text-align:center}
+.code{font-size:44px;font-weight:800;letter-spacing:10px;text-align:center;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent;padding-left:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:10px 14px;border-radius:999px;border:1px solid var(--bd);background:var(--card2);font-size:14px;cursor:pointer;user-select:none}
+.chip.on{background:linear-gradient(90deg,var(--a),var(--b));color:#fff;border-color:transparent}
+.pl{display:flex;flex-wrap:wrap;gap:8px}
+.pl span{background:var(--card2);border:1px solid var(--bd);padding:8px 12px;border-radius:999px;font-size:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.top{display:flex;justify-content:space-between;font-weight:600;font-size:14px;color:var(--mut);margin-bottom:8px}
+.bar{height:8px;background:var(--card2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--a),var(--b))}
+.disc{width:130px;height:130px;margin:20px auto 12px;border-radius:50%;background:radial-gradient(circle,var(--bg) 0 14%,transparent 15%),conic-gradient(from 0deg,var(--a),var(--b),var(--a),var(--b),var(--a));box-shadow:0 0 40px color-mix(in srgb,var(--a) 45%,transparent)}
+.disc.spin{animation:sp 2.2s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prompt{text-align:center;font-size:18px;font-weight:700;margin:6px 0 14px}
+.opts{display:grid;gap:10px}
+.opt{background:var(--card);border:2px solid var(--bd);color:var(--tx);border-radius:14px;padding:16px;font-size:16px;font-weight:600;text-align:left;cursor:pointer}
+.opt:active{transform:scale(.985)}
+.opt.sel{border-color:var(--a)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 22%,var(--card))}
+.opt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 22%,var(--card))}
+.opt:disabled{cursor:default}
+.rv{display:flex;gap:14px;align-items:center}
+.rv img{width:84px;height:84px;border-radius:12px;object-fit:cover;background:var(--card2)}
+.rv h3{margin:0 0 4px;font-size:17px}.rv p{margin:0;color:var(--mut);font-size:14px}
+.gain{font-weight:800;font-size:20px;margin:12px 0 4px}
+.gain.ok{color:var(--ok)}.gain.bad{color:var(--bad)}
+.rank{list-style:none;margin:10px 0 0;padding:0}
+.rank li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--card2);margin-bottom:6px;font-size:15px}
+.rank li.me{outline:2px solid var(--a)}
+.rank li .n{width:26px;text-align:center}.rank li .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank li small{color:var(--ok);font-weight:700}.rank li b{min-width:48px;text-align:right}
+.center{text-align:center}
+.big{font-size:26px;font-weight:800;margin:6px 0}
+.spinner{width:46px;height:46px;border:4px solid var(--card2);border-top-color:var(--a);border-radius:50%;margin:30px auto 14px;animation:sp 1s linear infinite}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--tx);color:var(--bg);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;opacity:0;transition:.3s;z-index:9;max-width:90%;text-align:center;pointer-events:none}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center;z-index:8}
+.modal.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:480px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 16px 28px}
+.sheet h3{margin:0 0 4px}
+.sheet label{margin-top:14px}
+</style>
+</head>
+<body data-theme="dark">
+<audio id="au" playsinline preload="auto"></audio>
+<div class="wrap">
+  <header>
+    <div class="brand">🎧 <b>Adivina</b> la Canción</div>
+    <div id="themes"></div>
+  </header>
+
+  <!-- INICIO -->
+  <section id="home" class="screen on">
+    <div class="card">
+      <label>Tu nombre</label>
+      <input id="name" maxlength="14" placeholder="Ej: Saul" autocomplete="off">
+      <button class="btn pri" id="bCreate">Crear sala</button>
+      <div class="or">o únete con un código</div>
+      <div class="row">
+        <input id="code" maxlength="4" placeholder="CÓDIGO" autocomplete="off" style="text-transform:uppercase;text-align:center;letter-spacing:4px">
+        <button class="btn" id="bJoin">Unirme</button>
+      </div>
+      <button class="btn ghost" id="bSolo">Jugar solo</button>
+    </div>
+    <p class="hint">Cada jugador entra desde su propio celular con el código de la sala. El audio son fragmentos de 30 s de Apple Music y Deezer.</p>
+  </section>
+
+  <!-- SALA -->
+  <section id="lobby" class="screen">
+    <div class="card center" id="codeBox">
+      <label>Código de sala</label>
+      <div class="code" id="roomCode">----</div>
+      <button class="btn" id="bShare">Compartir enlace</button>
+    </div>
+    <div class="card">
+      <label>Jugadores</label>
+      <div class="pl" id="plist"></div>
+    </div>
+    <div class="card" id="cfgBox">
+      <label>Géneros (elige uno o varios)</label>
+      <div class="chips" id="genres"></div>
+      <div class="grid2">
+        <div><label>Rondas</label><select id="cRounds"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+        <div><label>Segundos</label><select id="cDur"><option>10</option><option>15</option><option selected>20</option><option>30</option></select></div>
+      </div>
+      <label style="margin-top:12px">Adivinar</label>
+      <select id="cMode"><option value="song">El nombre de la canción</option><option value="artist">El artista</option></select>
+      <button class="btn" id="bEdit">✏️ Editar artistas</button>
+      <button class="btn pri" id="bStart">Empezar juego</button>
+    </div>
+    <p class="hint" id="waitMsg" hidden>Esperando que el anfitrión empiece…</p>
+    <button class="btn ghost" id="bLeave">Salir</button>
+  </section>
+
+  <!-- CARGANDO -->
+  <section id="loading" class="screen center">
+    <div class="spinner"></div>
+    <div class="big">Preparando canciones…</div>
+    <p class="hint">Buscando fragmentos de los artistas elegidos</p>
+  </section>
+
+  <!-- JUEGO -->
+  <section id="game" class="screen">
+    <div class="top"><span id="gq">Ronda</span><span id="gs">0 pts</span></div>
+    <div class="bar"><i id="gbar"></i></div>
+    <div class="disc spin" id="disc"></div>
+    <button class="btn" id="bSound" hidden>🔊 Toca para activar el sonido</button>
+    <div class="prompt" id="gprompt"></div>
+    <div class="opts" id="opts"></div>
+    <div class="card" id="rev" hidden style="margin-top:14px">
+      <div class="rv"><img id="rvImg" alt=""><div><h3 id="rvTitle"></h3><p id="rvArtist"></p></div></div>
+      <div class="gain" id="rvGain"></div>
+      <ul class="rank" id="rvRank"></ul>
+      <button class="btn pri" id="bNext" hidden>Siguiente ▶</button>
+      <p class="hint" id="rvWait">Siguiente ronda en unos segundos…</p>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section id="end" class="screen">
+    <div class="card center">
+      <div class="big">🏆 ¡Fin del juego!</div>
+      <ul class="rank" id="endRank"></ul>
+    </div>
+    <button class="btn pri" id="bAgain" hidden>Jugar otra vez</button>
+    <button class="btn" id="bExit">Salir</button>
+  </section>
+</div>
+
+<!-- EDITOR DE ARTISTAS -->
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h3>Artistas por género</h3>
+    <p class="hint" style="text-align:left;margin:4px 0 0">Un artista por línea. El juego busca sus canciones solo.</p>
+    <div id="edBody"></div>
+    <button class="btn pri" id="edSave">Guardar</button>
+    <button class="btn ghost" id="edReset">Restaurar lista original</button>
+    <button class="btn ghost" id="edClose">Cerrar</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const DEF={
+ 'Reggaeton':['Ozuna','Camilo','Nicki Nicole','Faraón Love Shady','Anuel AA','Daddy Yankee','Jhay Cortez','Jhae Weeler','Bad Bunny','Karol G','J Balvin','Maluma','Rauw Alejandro','Feid','Don Omar'],
+ 'Cumbia sureña':['Los Capos','Rosita de Espinar','Virus de Amor','Yarita Lizeth','Ruskaya','Corali','Dukes del Amor','Roy y los Gentiles','Florelisa','Jaltawi','Romanza'],
+ 'Cumbia peruana':['Grupo 5','Corazón Serrano','Agua Marina','Hermanos Yaipén','Armonía 10','Los Mirlos','Chacalón','Juaneco y su Combo','Los Shapis','Papillon']
+};
+const ICON={'Reggaeton':'🔥','Cumbia sureña':'🪗','Cumbia peruana':'🇵🇪'};
+let ART=load('adc_art',null)||JSON.parse(JSON.stringify(DEF));
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+/* ---------- temas ---------- */
+const THEMES=[['light','#ffffff'],['dark','#161624'],['neon','#ff2bd6'],['sunset','#ff7a3d'],['ocean','#38bdf8'],['forest','#4ade80']];
+function setTheme(t){document.body.dataset.theme=t;save('adc_theme',t);document.querySelectorAll('#themes i').forEach(i=>i.classList.toggle('on',i.dataset.t===t))}
+THEMES.forEach(([t,c])=>{const i=document.createElement('i');i.dataset.t=t;i.style.background=c;i.title=t;i.onclick=()=>setTheme(t);$('#themes').appendChild(i)});
+setTheme(load('adc_theme','dark'));
+
+/* ---------- utilidades ---------- */
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3200)}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const norm=s=>(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const au=$('#au');
+const SILENT='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+function unlockAudio(){try{au.src=SILENT;au.play().then(()=>au.pause()).catch(()=>{})}catch(e){}}
+
+/* ---------- estado ---------- */
+let isHost=false,myId='',myName='',peer=null,conn=null,conns={},players={},code='';
+let phase='home',cfg={genres:['Reggaeton'],rounds:10,dur:20,mode:'song'};
+let pool=[],remaining=[],total=0,q=0,cur=null,timer=null,nextT=null,roundStart=0,revealing=false;
+let myScore=0,answered=false,mySel=-1,curRound=null;
+
+/* ---------- inicio ---------- */
+$('#name').value=load('adc_name','');
+const qs=new URLSearchParams(location.search).get('sala');
+if(qs)$('#code').value=qs.toUpperCase().slice(0,4);
+function getName(){const n=$('#name').value.trim();if(!n){toast('Escribe tu nombre');return null}save('adc_name',n);return n}
+
+$('#bSolo').onclick=()=>{const n=getName();if(!n)return;unlockAudio();myName=n;isHost=true;myId='host';code='';players={host:{name:n,score:0,ans:null,gain:0}};phase='lobby';broadcastLobby()};
+
+$('#bCreate').onclick=()=>{
+  const n=getName();if(!n)return;
+  if(typeof Peer==='undefined'){toast('Sin conexión al servicio de salas. Prueba "Jugar solo".');return}
+  unlockAudio();myName=n;isHost=true;myId='host';
+  code=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join('');
+  $('#bCreate').disabled=true;
+  peer=new Peer('adcancion-'+code);
+  peer.on('open',()=>{$('#bCreate').disabled=false;players={host:{name:n,score:0,ans:null,gain:0}};phase='lobby';broadcastLobby()});
+  peer.on('connection',c=>{
+    c.on('data',m=>hostMsg(c,m));
+    c.on('close',()=>dropPlayer(c.peer));
+    c.on('error',()=>dropPlayer(c.peer));
+  });
+  peer.on('error',e=>{$('#bCreate').disabled=false;toast(e.type==='unavailable-id'?'Intenta de nuevo (código ocupado)':'Error de conexión: '+e.type)});
+};
+
+$('#bJoin').onclick=()=>{
+  const n=getName();if(!n)return;
+  const c=$('#code').value.trim().toUpperCase();if(c.length!==4){toast('El código tiene 4 letras');return}
+  if(typeof Peer==='undefined'){toast('Sin conexión al servicio de salas');return}
+  unlockAudio();myName=n;isHost=false;code=c;$('#bJoin').disabled=true;
+  peer=new Peer();
+  const fail=setTimeout(()=>{$('#bJoin').disabled=false;toast('No se encontró la sala');try{peer.destroy()}catch(e){}},9000);
+  peer.on('open',id=>{
+    myId=id;conn=peer.connect('adcancion-'+c,{reliable:true});
+    conn.on('open',()=>{clearTimeout(fail);$('#bJoin').disabled=false;conn.send({t:'join',name:n})});
+    conn.on('data',onMsg);
+    conn.on('close',()=>{toast('Se cerró la conexión con el anfitrión');setTimeout(()=>location.href=location.pathname,1500)});
+  });
+  peer.on('error',e=>{clearTimeout(fail);$('#bJoin').disabled=false;toast(e.type==='peer-unavailable'?'No existe esa sala':'Error de conexión: '+e.type)});
+};
+$('#bLeave').onclick=$('#bExit').onclick=()=>{location.href=location.pathname};
+
+/* ---------- red ---------- */
+function sendAll(m){for(const c of Object.values(conns))if(c.open)c.send(m);onMsg(m)}
+function hostMsg(c,m){
+  if(m.t==='join'){
+    if(phase!=='lobby'){c.send({t:'err',msg:'La partida ya empezó'});setTimeout(()=>c.close(),300);return}
+    if(Object.keys(players).length>=12){c.send({t:'err',msg:'Sala llena'});return}
+    conns[c.peer]=c;players[c.peer]={name:String(m.name||'Jugador').slice(0,14),score:0,ans:null,gain:0};broadcastLobby();
+  }else if(m.t==='ans')recordAns(c.peer,m.i);
+}
+function dropPlayer(id){delete conns[id];delete players[id];if(phase==='lobby')broadcastLobby();else if(phase==='game')checkAll()}
+function broadcastLobby(){
+  const list=Object.entries(players).map(([id,p])=>({id,name:p.name}));
+  sendAll({t:'lobby',code,players:list});
+}
+
+/* ---------- mensajes (host y jugadores) ---------- */
+function onMsg(m){
+  if(m.t==='lobby')showLobby(m);
+  else if(m.t==='loading')show('loading');
+  else if(m.t==='round')playRound(m);
+  else if(m.t==='reveal')showReveal(m);
+  else if(m.t==='end')showEnd(m);
+  else if(m.t==='err')toast(m.msg);
+}
+
+/* ---------- sala ---------- */
+function showLobby(m){
+  phase='lobby';show('lobby');
+  $('#codeBox').hidden=!m.code;
+  $('#roomCode').textContent=m.code||'';
+  $('#plist').innerHTML=m.players.map(p=>`<span>${p.id===m.players[0].id?'👑 ':''}${esc(p.name)}</span>`).join('');
+  $('#cfgBox').hidden=!isHost;$('#waitMsg').hidden=isHost;
+  if(isHost)renderCfg();
+}
+function renderCfg(){
+  $('#genres').innerHTML=Object.keys(ART).map(g=>`<div class="chip ${cfg.genres.includes(g)?'on':''}" data-g="${esc(g)}">${ICON[g]||'🎵'} ${esc(g)}</div>`).join('')+`<div class="chip ${cfg.genres.length===Object.keys(ART).length?'on':''}" data-g="*">🎲 Todo mezclado</div>`;
+  $('#genres').querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+    const g=c.dataset.g,all=Object.keys(ART);
+    if(g==='*')cfg.genres=all.slice();
+    else{const i=cfg.genres.indexOf(g);if(i>=0){if(cfg.genres.length>1)cfg.genres.splice(i,1)}else cfg.genres.push(g)}
+    renderCfg();
+  });
+}
+$('#cRounds').onchange=e=>cfg.rounds=+e.target.value;
+$('#cDur').onchange=e=>cfg.dur=+e.target.value;
+$('#cMode').onchange=e=>cfg.mode=e.target.value;
+$('#bShare').onclick=async()=>{
+  const url=location.origin+location.pathname+'?sala='+code;
+  const txt=`Juega "Adivina la Canción" conmigo. Código: ${code}\n${url}`;
+  try{if(navigator.share){await navigator.share({text:txt})}else{await navigator.clipboard.writeText(txt);toast('Enlace copiado')}}catch(e){}
+};
+
+/* ---------- editor de artistas ---------- */
+$('#bEdit').onclick=()=>{
+  $('#edBody').innerHTML=Object.keys(ART).map(g=>`<label>${ICON[g]||'🎵'} ${esc(g)}</label><textarea data-g="${esc(g)}">${esc(ART[g].join('\n'))}</textarea>`).join('');
+  $('#modal').classList.add('on');
+};
+$('#edClose').onclick=()=>$('#modal').classList.remove('on');
+$('#edSave').onclick=()=>{
+  document.querySelectorAll('#edBody textarea').forEach(t=>{ART[t.dataset.g]=t.value.split('\n').map(s=>s.trim()).filter(Boolean)});
+  save('adc_art',ART);$('#modal').classList.remove('on');toast('Artistas guardados');
+};
+$('#edReset').onclick=()=>{ART=JSON.parse(JSON.stringify(DEF));save('adc_art',ART);$('#bEdit').click();toast('Lista restaurada')};
+
+/* ---------- canciones (iTunes) ---------- */
+let netFail=0;
+async function fetchArtist(a){
+  let j=null;
+  for(const c of ['PE','US']){
+    try{
+      const r=await fetch('https://itunes.apple.com/search?term='+encodeURIComponent(a)+'&media=music&entity=song&limit=40&country='+c);
+      j=await r.json();
+      if(j&&j.results&&j.results.length)break;
+    }catch(e){netFail++}
+  }
+  if(!j)return [];
+  const words=norm(a).split(' ').filter(w=>w.length>=3);
+  const seen=new Set(),out=[];
+  for(const x of j.results||[]){
+    if(!x.previewUrl||!x.trackName)continue;
+    const an=norm(x.artistName);
+    if(words.length&&!words.every(w=>an.includes(w)))continue;
+    const title=x.trackName.replace(/\s*[\(\[].*?[\)\]]/g,'').replace(/\s*-\s*(remaster|en vivo|live|versi).*/i,'').trim();
+    const k=norm(title);if(!k||seen.has(k))continue;seen.add(k);
+    out.push({title,artist:x.artistName,main:x.artistName.split(/,|&| feat| ft\.| y /i)[0].trim(),url:x.previewUrl,art:(x.artworkUrl100||'').replace('100x100','300x300')});
+  }
+  return shuffle(out).slice(0,10);
+}
+function jsonp(url){return new Promise((res,rej)=>{const cb='dz'+Math.random().toString(36).slice(2);const sc=document.createElement('script');const t=setTimeout(()=>{cleanup();rej(new Error('timeout'))},8000);function cleanup(){clearTimeout(t);delete window[cb];sc.remove()}window[cb]=d=>{cleanup();res(d)};sc.onerror=()=>{cleanup();rej(new Error('net'))};sc.src=url+'&output=jsonp&callback='+cb;document.head.appendChild(sc)})}
+async function fetchDeezer(a){
+  const words=norm(a).split(' ').filter(w=>w.length>=3);
+  let d;try{d=await jsonp('https://api.deezer.com/search?limit=40&q='+encodeURIComponent('artist:"'+a+'"'))}catch(e){netFail++;return []}
+  const seen=new Set(),out=[];
+  for(const x of (d&&d.data)||[]){
+    if(!x.preview||!x.title_short)continue;
+    const an=norm(x.artist&&x.artist.name);
+    if(words.length&&!words.every(w=>an.includes(w)))continue;
+    const title=x.title_short.replace(/\s*[\(\[].*?[\)\]]/g,'').trim();
+    const k=norm(title);if(!k||seen.has(k))continue;seen.add(k);
+    out.push({title,artist:x.artist.name,main:x.artist.name,url:x.preview,art:(x.album&&x.album.cover_medium)||''});
+  }
+  return out;
+}
+async function fetchBoth(a){
+  const [x,y]=await Promise.all([fetchArtist(a).catch(()=>[]),fetchDeezer(a)]);
+  const seen=new Set(),out=[];
+  for(const t of [...x,...y]){const k=norm(t.title);if(seen.has(k))continue;seen.add(k);out.push(t)}
+  return shuffle(out).slice(0,12);
+}
+async function buildPool(){
+  netFail=0;
+  const artists=[...new Set(cfg.genres.flatMap(g=>ART[g]||[]))];
+  const res=await Promise.allSettled(artists.map(fetchBoth));
+  let all=[];res.forEach(r=>{if(r.status==='fulfilled')all=all.concat(r.value)});
+  const seen=new Set();all=all.filter(t=>{const k=norm(t.title);if(seen.has(k))return false;seen.add(k);return true});
+  if(all.length<4)throw new Error(netFail>=artists.length*2?'No hay conexión con Apple Music. Abre el juego desde un enlace en tu navegador (Chrome), no desde el visor de archivos.':'Encontré pocas canciones. Prueba otros géneros o edita los artistas.');
+  return shuffle(all);
+}
+
+/* ---------- lógica de juego (host) ---------- */
+$('#bStart').onclick=async()=>{
+  if(phase!=='lobby')return;
+  unlockAudio();phase='loading';sendAll({t:'loading'});
+  try{pool=await buildPool()}catch(e){toast(e.message);phase='lobby';broadcastLobby();return}
+  Object.values(players).forEach(p=>{p.score=0;p.gain=0});
+  total=Math.min(cfg.rounds,pool.length);remaining=pool.slice(0,total);q=0;phase='game';nextRound();
+};
+function nextRound(){
+  clearTimeout(nextT);
+  if(remaining.length===0){return endGame()}
+  cur=remaining.shift();q++;revealing=false;
+  let mode=cfg.mode;
+  const key=t=>mode==='artist'?t.main:t.title;
+  let distinct=[...new Map(pool.map(t=>[norm(key(t)),key(t)])).values()].filter(x=>norm(x)!==norm(key(cur)));
+  if(mode==='artist'&&distinct.length<3){mode='song';distinct=[...new Map(pool.map(t=>[norm(t.title),t.title])).values()].filter(x=>norm(x)!==norm(cur.title))}
+  const k=t=>mode==='artist'?t.main:t.title;
+  const opts=shuffle([k(cur),...shuffle(distinct).slice(0,3)]);
+  cur.idx=opts.indexOf(k(cur));
+  Object.values(players).forEach(p=>p.ans=null);
+  roundStart=Date.now();
+  sendAll({t:'round',q,total,url:cur.url,opts,dur:cfg.dur,mode});
+  clearTimeout(timer);timer=setTimeout(reveal,cfg.dur*1000+900);
+}
+function recordAns(id,i){
+  const p=players[id];if(!p||p.ans||!cur||revealing||phase!=='game')return;
+  p.ans={i:+i,ms:Date.now()-roundStart};checkAll();
+}
+function checkAll(){
+  if(revealing||!cur)return;
+  if(Object.values(players).every(p=>p.ans)){clearTimeout(timer);timer=setTimeout(reveal,500)}
+}
+function reveal(){
+  if(revealing||!cur)return;revealing=true;clearTimeout(timer);
+  const dur=cfg.dur*1000;
+  const rows=Object.entries(players).map(([id,p])=>{
+    let gain=0,ok=false;
+    if(p.ans&&p.ans.i===cur.idx){ok=true;gain=500+Math.round(500*Math.max(0,dur-p.ans.ms)/dur)}
+    p.score+=gain;p.gain=gain;
+    return {id,name:p.name,gain,score:p.score,ok,answered:!!p.ans};
+  }).sort((a,b)=>b.score-a.score);
+  const last=remaining.length===0;
+  sendAll({t:'reveal',correct:cur.idx,title:cur.title,artist:cur.artist,art:cur.art,rows,last});
+  nextT=setTimeout(nextRound,last?5000:6500);
+}
+function endGame(){
+  phase='end';
+  const rows=Object.entries(players).map(([id,p])=>({id,name:p.name,score:p.score})).sort((a,b)=>b.score-a.score);
+  sendAll({t:'end',rows});
+}
+$('#bNext').onclick=()=>{clearTimeout(nextT);nextRound()};
+$('#bAgain').onclick=()=>{Object.values(players).forEach(p=>{p.score=0;p.gain=0});phase='lobby';broadcastLobby()};
+
+/* ---------- ronda (todos) ---------- */
+function playRound(m){
+  phase='game';curRound=m;answered=false;mySel=-1;
+  show('game');$('#rev').hidden=true;$('#opts').hidden=false;$('#bSound').hidden=true;
+  $('#gq').textContent=`Ronda ${m.q}/${m.total}`;$('#gs').textContent=myScore+' pts';
+  $('#gprompt').textContent=m.mode==='artist'?'¿Quién la canta?':'¿Cómo se llama esta canción?';
+  $('#opts').innerHTML=m.opts.map((o,i)=>`<button class="opt" data-i="${i}">${esc(o)}</button>`).join('');
+  $('#opts').querySelectorAll('.opt').forEach(b=>b.onclick=()=>choose(+b.dataset.i));
+  const bar=$('#gbar');bar.style.transition='none';bar.style.width='100%';void bar.offsetWidth;
+  bar.style.transition=`width ${m.dur}s linear`;bar.style.width='0%';
+  $('#disc').classList.add('spin');
+  au.src=m.url;au.currentTime=0;
+  au.play().catch(()=>{$('#bSound').hidden=false});
+}
+$('#bSound').onclick=()=>{au.play().then(()=>$('#bSound').hidden=true).catch(()=>{})};
+function choose(i){
+  if(answered)return;answered=true;mySel=i;
+  document.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(+b.dataset.i===i)b.classList.add('sel')});
+  if(isHost)recordAns('host',i);else if(conn&&conn.open)conn.send({t:'ans',i});
+}
+function showReveal(m){
+  document.querySelectorAll('.opt').forEach(b=>{
+    b.disabled=true;const i=+b.dataset.i;
+    if(i===m.correct)b.classList.add('ok');else if(i===mySel)b.classList.add('bad');
+  });
+  const me=m.rows.find(r=>r.id===myId);
+  if(me)myScore=me.score;
+  $('#gs').textContent=myScore+' pts';
+  $('#rvImg').src=m.art||'';$('#rvTitle').textContent=m.title;$('#rvArtist').textContent=m.artist;
+  const g=$('#rvGain');
+  if(me&&me.ok){g.className='gain ok';g.textContent='+'+me.gain+' puntos'}
+  else{g.className='gain bad';g.textContent=me&&me.answered?'Fallaste':'Sin respuesta'}
+  $('#rvRank').innerHTML=rankHTML(m.rows,true);
+  $('#bNext').hidden=!(isHost&&!m.last);
+  $('#rvWait').textContent=m.last?'Calculando resultado final…':'Siguiente ronda en unos segundos…';
+  $('#rev').hidden=false;
+  $('#bar').hidden;$('#disc').classList.remove('spin');
+  $('#rev').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function rankHTML(rows,showGain){
+  const med=['🥇','🥈','🥉'];
+  return rows.map((r,i)=>`<li class="${r.id===myId?'me':''}"><span class="n">${med[i]||i+1}</span><span class="nm">${esc(r.name)}</span>${showGain&&r.gain?`<small>+${r.gain}</small>`:''}<b>${r.score}</b></li>`).join('');
+}
+function showEnd(m){
+  phase='end';au.pause();show('end');
+  $('#endRank').innerHTML=rankHTML(m.rows,false);
+  $('#bAgain').hidden=!isHost;
+}
+</script>
+</body>
+</html>
